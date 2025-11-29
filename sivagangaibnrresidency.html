@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BNR Residency — eCard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --bg-yellow: #f6a800;
+  --gold: #d4af37;
+  --dark-1: #0b1520;
+  --dark-2: #0f2030;
+  --muted: #9fb0c8;
+  --white: #ffffff;
+  --card-radius: 12px;
+  --max-width: 420px;
+  --shadow: 0 10px 30px rgba(0,0,0,.18);
+}
+
+/* RESET */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--bg-yellow);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  display:flex;
+  align-items:center;           /* vertical center */
+  justify-content:center;       /* horizontal center */
+  padding:20px;
+  min-height:100vh;
+  color:#111;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* CARD */
+.wrapper{
+  width:100%;
+  max-width:var(--max-width);
+  padding:14px;
+  border-radius:16px;
+  /* subtle outer frame */
+  outline: 6px solid rgba(0,0,0,0.06);
+  display:flex;
+  justify-content:center;
+}
+.ecard{
+  width:100%;
+  background:var(--bg-yellow);
+  border:3px solid #000;
+  border-radius:var(--card-radius);
+  padding:18px;
+  box-shadow:var(--shadow);
+}
+
+/* Header */
+.main-head{text-align:center}
+.bnr{
+  display:inline-block;
+  background:#3c2a1e;
+  color:var(--white);
+  padding:6px 18px;
+  font-weight:900;
+  font-size:28px;
+  border-radius:8px;
+  text-shadow:1px 1px 0 rgba(0,0,0,.5);
+}
+.res{font-size:20px;font-weight:900;margin-top:8px}
+.line{width:140px;height:4px;background:#000;margin:8px auto;border-radius:3px}
+.hall{font-weight:900;font-size:14px;margin-top:6px}
+
+/* Address */
+.address-box{
+  margin-top:12px;
+  padding:12px;
+  background:#fff4d1;
+  border-radius:10px;
+  border:2px solid #000;
+  text-align:center;
+  font-weight:700;
+}
+
+/* Buttons */
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+.btn{
+  background:#3c2a1e;
+  color:var(--white);
+  border:2px solid #000;
+  padding:12px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-weight:700;
+  cursor:pointer;
+  text-decoration:none;
+  user-select:none;
+}
+.btn:active{transform:scale(.98)}
+.center-box{display:flex;justify-content:center;margin-top:12px}
+.center-btn{width:100%;max-width:220px}
+.enquiry-final{
+  margin-top:16px;
+  background:#000;
+  color:var(--bg-yellow);
+  padding:14px;
+  border-radius:12px;
+  border:3px solid #000;
+  font-weight:900;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  cursor:pointer;
+}
+.footer{margin-top:12px;text-align:center;font-weight:700}
+
+/* POPUP common */
+.popup-bg{
+  display:none;
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.85);
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  z-index:9999;
+  backdrop-filter:blur(3px);
+}
+.popup-box{
+  width:100%;
+  max-width:520px;
+  max-height:90vh;
+  overflow:auto;
+  border-radius:12px;
+  padding:18px;
+  animation:pop .22s ease;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);
+}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+
+/* Overview popup — Dark Premium (Option B) */
+.overview-popup .popup-box{
+  background:linear-gradient(180deg,var(--dark-2),#07101a);
+  color:var(--white);
+  border:4px solid rgba(212,175,55,0.12);
+}
+.overview-popup h2{
+  font-size:20px;
+  text-align:left;
+  margin-bottom:10px;
+  color:var(--gold);
+  font-weight:900;
+}
+.overview-abt{
+  background: rgba(255,255,255,0.03);
+  border-left:4px solid rgba(212,175,55,0.12);
+  padding:12px;
+  border-radius:8px;
+  margin-bottom:14px;
+  color:var(--white);
+  line-height:1.6;
+  font-size:14px;
+}
+
+/* facilities */
+.facility-list{display:flex;flex-direction:column;gap:12px}
+.facility{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:10px;
+  padding:12px;
+  border:1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 6px 18px rgba(2,8,14,0.45);
+  transform:translateY(8px);
+  opacity:0;
+  animation:slideUp .45s forwards;
+}
+.facility:nth-child(1){animation-delay:0.05s}
+.facility:nth-child(2){animation-delay:0.12s}
+.facility:nth-child(3){animation-delay:0.18s}
+.facility:nth-child(4){animation-delay:0.24s}
+.facility:nth-child(5){animation-delay:0.30s}
+.fac-head{
+  display:inline-block;
+  background:linear-gradient(90deg,var(--gold),#ffcb6b);
+  color:#111;
+  padding:6px 10px;
+  font-weight:900;
+  border-radius:8px;
+  font-size:13px;
+}
+.fac-body{color:var(--muted);line-height:1.6;margin-top:8px;font-size:14px}
+@keyframes slideUp{to{transform:translateY(0);opacity:1}}
+
+/* Gallery popup (light) */
+.gallery-popup .popup-box{background:#fff;border:3px solid #000}
+.gallery-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.gallery-item{width:100%;height:130px;object-fit:cover;border-radius:8px;border:2px solid #000}
+
+/* Enquiry popup (dark) */
+#enquiryPopup .popup-box{
+  background: linear-gradient(180deg,var(--dark-2),#071427);
+  color:var(--white);
+  border:4px solid rgba(212,175,55,0.12);
+}
+#enquiryPopup h2{color:var(--gold);font-weight:900;margin-bottom:10px}
+
+/* inputs */
+.inp-group{margin-bottom:12px}
+.inp-group label{
+  display:block;
+  font-size:13px;
+  color:rgba(244,230,179,0.95);
+  margin-bottom:6px;
+  font-weight:800;
+}
+.inp{
+  width:100%;
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:rgba(0,0,0,0.12);
+  color:var(--white);
+  font-size:15px;
+}
+
+/* room-type checkboxes aligned straight */
+.room-types{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:10px;
+  border-radius:8px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.03);
+}
+.chk{display:flex;align-items:center;gap:10px}
+.chk input[type="checkbox"]{
+  width:18px;height:18px;border-radius:4px;cursor:pointer;
+  accent-color: var(--gold);
+}
+
+/* row layout */
+.row{display:flex;gap:10px}
+.col{flex:1}
+
+/* popup actions */
+.popup-actions{display:flex;gap:10px;margin-top:10px}
+.send-btn{
+  flex:1;
+  background:linear-gradient(90deg,var(--gold),#ffd76b);
+  color:#111;
+  padding:12px;border-radius:10px;border:2px solid rgba(0,0,0,0.2);
+  font-weight:900;cursor:pointer;text-align:center;
+}
+.cancel-btn{
+  flex:1;background:transparent;border:2px solid rgba(255,255,255,0.06);
+  color:var(--white);padding:12px;border-radius:10px;cursor:pointer;text-align:center;
+}
+.small-note{font-size:12px;color:rgba(255,255,255,0.6);margin-top:6px}
+
+/* responsive tweaks */
+@media (max-width:520px){
+  .popup-box{padding:14px}
+  .bnr{font-size:26px}
+  .gallery-item{height:100px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="ecard" role="region" aria-label="BNR Residency eCard">
+    <div class="main-head">
+      <div class="bnr">B N R</div>
+      <div class="res">RESIDENCY</div>
+      <div class="line"></div>
+      <div class="hall">MARRIAGE HALL</div>
+    </div>
+
+    <div class="address-box" aria-label="Address">
+      2/6, Nagamalaiyan Complex,<br>
+      Railway Station Road,<br>
+      Sivagangai – 630561<br><br>
+      Phone: <b>9442640803</b>
+    </div>
+
+    <div class="actions" role="group" aria-label="Primary actions">
+      <a class="btn" href="tel:+919442640803" aria-label="Call"><i class="fa-solid fa-phone"></i> Call</a>
+      <a class="btn" href="https://wa.me/919442640803" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+    </div>
+
+    <div class="actions" style="margin-top:10px">
+      <a class="btn" href="https://www.google.com/maps?q=BNR+Residency+Sivagangai" target="_blank" aria-label="Location"><i class="fa-solid fa-location-dot"></i> Location</a>
+      <div class="btn" id="overviewBtn" role="button" aria-haspopup="dialog"><i class="fa-solid fa-circle-info"></i> Overview</div>
+    </div>
+
+    <div class="center-box">
+      <a class="btn center-btn" href="https://bnrresidency.com" target="_blank" aria-label="Website"><i class="fa-solid fa-globe"></i> Website</a>
+    </div>
+
+    <div class="actions" style="margin-top:12px">
+      <div class="btn" id="vcardBtn" role="button" aria-label="Save Contact"><i class="fa-regular fa-address-card"></i> Save Contact</div>
+      <div class="btn" id="galleryBtn" role="button" aria-label="Gallery"><i class="fa-solid fa-camera"></i> Gallery</div>
+    </div>
+
+    <div class="enquiry-final" id="openEnquiry" role="button" aria-haspopup="dialog"><i class="fa-solid fa-bed"></i> Room Enquiry</div>
+
+    <div class="footer" aria-hidden="false">BNR Residency - 9442640803</div>
+  </div>
+</div>
+
+<!-- Overview Popup -->
+<div class="popup-bg overview-popup" id="overviewPopup" aria-hidden="true">
+  <div class="popup-box" role="dialog" aria-modal="true" aria-labelledby="overviewTitle">
+    <h2 id="overviewTitle">About Us</h2>
+    <div class="overview-abt">
+      Our BNR Residency is situated at a walkable distance of <strong>400 meters from the Railway Station</strong> and <strong>1/2 kilometer from the Bus Stand</strong>. District Collectorate and nearby government offices are also within half a kilometer. We provide <strong>Free WiFi</strong> and <strong>Ample Car Parking</strong>. We ensure the best reception service and neat maintenance for all our guests.
+    </div>
+
+    <h2 style="margin-top:6px">Facilities</h2>
+
+    <div class="facility-list" id="facilityList">
+      <div class="facility">
+        <div class="fac-head">GENERAL</div>
+        <div class="fac-body">Non-smoking rooms, design hotel, air conditioning throughout, neat housekeeping.</div>
+      </div>
+
+      <div class="facility">
+        <div class="fac-head">SERVICES</div>
+        <div class="fac-body">24-hour front desk, luggage storage, room service, laundry, car hire, tour desk, concierge, shuttle service (surcharge).</div>
+      </div>
+
+      <div class="facility">
+        <div class="fac-head">ACTIVITIES</div>
+        <div class="fac-body">Newspapers, TV and local sightseeing assistance.</div>
+      </div>
+
+      <div class="facility">
+        <div class="fac-head">INTERNET</div>
+        <div class="fac-body">High-speed WiFi available in all areas and is free of charge.</div>
+      </div>
+
+      <div class="facility">
+        <div class="fac-head">PARKING</div>
+        <div class="fac-body">Free private parking is available on site (reservation not needed).</div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;display:flex;justify-content:flex-end">
+      <div class="cancel-btn" id="closeOverview" role="button">Close</div>
+    </div>
+  </div>
+</div>
+
+<!-- Gallery Popup -->
+<div class="popup-bg gallery-popup" id="galleryPopup" aria-hidden="true">
+  <div class="popup-box" role="dialog" aria-modal="true" aria-labelledby="galleryTitle">
+    <h2 id="galleryTitle" style="color:#111">Photo Gallery</h2>
+    <div class="gallery-grid">
+      <img class="gallery-item" src="https://placehold.co/600x400/f6a800/000?text=Exterior" alt="Exterior">
+      <img class="gallery-item" src="https://placehold.co/600x400/ddd/000?text=Hall" alt="Hall">
+      <img class="gallery-item" src="https://placehold.co/600x400/aaa/000?text=Room" alt="Room">
+      <img class="gallery-item" src="https://placehold.co/600x400/f6a800/000?text=Reception" alt="Reception">
+    </div>
+    <div style="display:flex;justify-content:flex-end"><div class="close-btn" id="closeGallery">Close</div></div>
+  </div>
+</div>
+
+<!-- Enquiry Popup -->
+<div class="popup-bg" id="enquiryPopup" aria-hidden="true">
+  <div class="popup-box" role="dialog" aria-modal="true" aria-labelledby="enquiryTitle">
+    <h2 id="enquiryTitle">Room Booking</h2>
+
+    <div class="inp-group">
+      <label for="inpName">Full Name *</label>
+      <input id="inpName" class="inp" placeholder="Enter full name" />
+    </div>
+
+    <div class="inp-group">
+      <label for="inpMobile">Mobile / WhatsApp Number *</label>
+      <input id="inpMobile" class="inp" placeholder="Enter mobile or WhatsApp number" />
+    </div>
+
+    <div class="inp-group">
+      <label for="inpCity">City</label>
+      <input id="inpCity" class="inp" placeholder="City" />
+    </div>
+
+    <div class="inp-group">
+      <label>Select Room Types</label>
+      <div class="room-types" role="group" aria-label="Room Types">
+        <div class="chk"><input type="checkbox" id="r1" value="Double Bed Room"><label for="r1">Double Bed Room</label></div>
+        <div class="chk"><input type="checkbox" id="r2" value="Triple Bed Room"><label for="r2">Triple Bed Room</label></div>
+        <div class="chk"><input type="checkbox" id="r3" value="Four Bed Room"><label for="r3">Four Bed Room</label></div>
+      </div>
+      <div class="small-note">Select one or more room types</div>
+    </div>
+
+    <div class="row">
+      <div class="col inp-group">
+        <label for="inpAdults">No. of Adults</label>
+        <input id="inpAdults" class="inp" type="number" min="0" value="2" />
+      </div>
+      <div class="col inp-group">
+        <label for="inpChild">No. of Childs</label>
+        <input id="inpChild" class="inp" type="number" min="0" value="0" />
+      </div>
+    </div>
+
+    <div class="inp-group">
+      <label for="inpCheckin">Check-In Date & Time</label>
+      <input id="inpCheckin" class="inp" type="datetime-local" />
+      <div class="small-note">Check-In cannot be in the past.</div>
+    </div>
+
+    <div class="inp-group">
+      <label for="inpCheckout">Check-Out Date & Time</label>
+      <input id="inpCheckout" class="inp" type="datetime-local" />
+      <div class="small-note">Check-Out must be at least 24 hours after Check-In.</div>
+    </div>
+
+    <div class="popup-actions">
+      <div id="submitEnquiry" class="send-btn" role="button"><i class="fa-brands fa-whatsapp"></i> SEND ENQUIRY</div>
+      <div id="closeEnquiry" class="cancel-btn" role="button">Cancel</div>
+    </div>
+
+    <div style="margin-top:10px;color:rgba(255,255,255,0.6);font-size:13px">By sending an enquiry you agree to be contacted for booking confirmation.</div>
+  </div>
+</div>
+
+<script>
+/* Elements */
+const overviewBtn = document.getElementById('overviewBtn');
+const overviewPopup = document.getElementById('overviewPopup');
+const closeOverview = document.getElementById('closeOverview');
+
+const galleryBtn = document.getElementById('galleryBtn');
+const galleryPopup = document.getElementById('galleryPopup');
+const closeGallery = document.getElementById('closeGallery');
+
+const openEnquiry = document.getElementById('openEnquiry');
+const enquiryPopup = document.getElementById('enquiryPopup');
+const closeEnquiry = document.getElementById('closeEnquiry');
+
+const vcardBtn = document.getElementById('vcardBtn');
+const submitEnquiry = document.getElementById('submitEnquiry');
+
+/* Input refs */
+const inpCheckin = document.getElementById('inpCheckin');
+const inpCheckout = document.getElementById('inpCheckout');
+
+/* Utility: format date to YYYY-MM-DDThh:mm (for input min/value) */
+function toDateTimeLocal(dt){
+  // dt: Date object
+  const pad = (n)=> String(n).padStart(2,'0');
+  const yyyy = dt.getFullYear();
+  const mm = pad(dt.getMonth()+1);
+  const dd = pad(dt.getDate());
+  const hh = pad(dt.getHours());
+  const min = pad(dt.getMinutes());
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+}
+
+/* Set initial min for checkin to now (rounded up to next minute) */
+function setInitialMins(){
+  const now = new Date();
+  // round up to next minute to avoid past-second issues
+  now.setSeconds(0,0);
+  const nowPlus1Min = new Date(now.getTime() + 60*1000);
+  inpCheckin.min = toDateTimeLocal(nowPlus1Min);
+
+  // set checkout min initially to now plus 24 hours
+  const checkoutMinInit = new Date(nowPlus1Min.getTime() + 24*60*60*1000);
+  inpCheckout.min = toDateTimeLocal(checkoutMinInit);
+}
+setInitialMins();
+
+/* When user picks checkin, update checkout.min to checkin + 24 hours */
+inpCheckin.addEventListener('change', ()=> {
+  const val = inpCheckin.value;
+  if(!val) return;
+  const inTime = new Date(val);
+  // ensure inTime not in past - browser min should prevent, but double-check
+  const now = new Date();
+  if(inTime.getTime() < now.getTime() - 60000){
+    alert('Check-In cannot be in the past. Please pick a future date/time.');
+    // reset to min
+    setInitialMins();
+    return;
+  }
+
+  // compute checkout minimum = checkin + 24 hours
+  const minOut = new Date(inTime.getTime() + 24*60*60*1000);
+  inpCheckout.min = toDateTimeLocal(minOut);
+
+  // if checkout is blank or less than min, set it to minOut (auto adjust)
+  if(!inpCheckout.value || new Date(inpCheckout.value).getTime() < minOut.getTime()){
+    // set value to minOut for user convenience
+    inpCheckout.value = toDateTimeLocal(minOut);
+  }
+});
+
+/* If user opens checkout first, ensure its min is reasonable (when checkin not selected) */
+inpCheckout.addEventListener('focus', ()=> {
+  if(!inpCheckin.value){
+    // ensure checkout min is at least now + 24 hours
+    const now = new Date();
+    now.setSeconds(0,0);
+    const minOut = new Date(now.getTime() + 24*60*60*1000);
+    inpCheckout.min = toDateTimeLocal(minOut);
+  }
+});
+
+/* Popup Open/Close handlers */
+overviewBtn.addEventListener('click', ()=>{
+  overviewPopup.style.display='flex';
+  overviewPopup.setAttribute('aria-hidden','false');
+  // restart facility animations
+  const items = overviewPopup.querySelectorAll('.facility');
+  items.forEach(el=>{
+    el.style.opacity = 0;
+    el.style.transform = 'translateY(8px)';
+    // force reflow then allowAnimations (small delay)
+    void el.offsetWidth;
+  });
+  // let CSS animation handle reveal
+});
+galleryBtn.addEventListener('click', ()=> {
+  galleryPopup.style.display='flex';
+  galleryPopup.setAttribute('aria-hidden','false');
+});
+openEnquiry.addEventListener('click', ()=> {
+  enquiryPopup.style.display='flex';
+  enquiryPopup.setAttribute('aria-hidden','false');
+});
+
+/* Close buttons */
+if(closeOverview) closeOverview.addEventListener('click', ()=> {
+  overviewPopup.style.display='none';
+  overviewPopup.setAttribute('aria-hidden','true');
+});
+if(closeGallery) closeGallery.addEventListener('click', ()=> {
+  galleryPopup.style.display='none';
+  galleryPopup.setAttribute('aria-hidden','true');
+});
+if(closeEnquiry) closeEnquiry.addEventListener('click', ()=> {
+  enquiryPopup.style.display='none';
+  enquiryPopup.setAttribute('aria-hidden','true');
+});
+
+/* Click outside to close */
+window.addEventListener('click', (e)=>{
+  if(e.target === overviewPopup){ overviewPopup.style.display='none'; overviewPopup.setAttribute('aria-hidden','true'); }
+  if(e.target === galleryPopup){ galleryPopup.style.display='none'; galleryPopup.setAttribute('aria-hidden','true'); }
+  if(e.target === enquiryPopup){ enquiryPopup.style.display='none'; enquiryPopup.setAttribute('aria-hidden','true'); }
+});
+
+/* vCard download */
+if(vcardBtn){
+  vcardBtn.addEventListener('click', ()=> {
+    const vcard = `BEGIN:VCARD
+VERSION:3.0
+FN:BNR Residency
+ORG:BNR Residency
+TEL;TYPE=WORK,VOICE:+919442640803
+ADR;TYPE=WORK:;;2/6 Nagamalaiyan Complex, Railway Station Road;Sivagangai;;630561;IN
+URL:https://bnrresidency.com
+END:VCARD`;
+    const blob = new Blob([vcard], {type:'text/vcard'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'BNR_Residency.vcf';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+}
+
+/* Enquiry submit with full validation:
+   - name & mobile present
+   - checkin present & not past
+   - checkout present & >= checkin + 24hrs
+*/
+if(submitEnquiry){
+  submitEnquiry.addEventListener('click', ()=>{
+    const name = (document.getElementById('inpName')||{}).value?.trim();
+    const mobile = (document.getElementById('inpMobile')||{}).value?.trim();
+    const city = (document.getElementById('inpCity')||{}).value?.trim();
+    const checkinVal = inpCheckin.value;
+    const checkoutVal = inpCheckout.value;
+
+    if(!name || !mobile){
+      alert('Please enter Full Name and Mobile / WhatsApp number.');
+      return;
+    }
+
+    if(!checkinVal){
+      alert('Please select Check-In Date & Time.');
+      return;
+    }
+    if(!checkoutVal){
+      alert('Please select Check-Out Date & Time.');
+      return;
+    }
+
+    const inTime = new Date(checkinVal);
+    const outTime = new Date(checkoutVal);
+    const now = new Date();
+
+    if(isNaN(inTime.getTime()) || isNaN(outTime.getTime())){
+      alert('Please pick valid dates.');
+      return;
+    }
+
+    // check checkin not in past (allow small leeway 1 minute)
+    if(inTime.getTime() + 60000 < now.getTime()){
+      alert('Check-In cannot be in the past. Please pick a future date/time.');
+      return;
+    }
+
+    // ensure checkout at least 24 hours after checkin
+    const requiredMinCheckout = new Date(inTime.getTime() + 24*60*60*1000);
+    if(outTime.getTime() < requiredMinCheckout.getTime()){
+      alert('Check-Out must be at least 24 hours after Check-In (next day or later).');
+      return;
+    }
+
+    // collect room types
+    const rooms = [];
+    if(document.getElementById('r1').checked) rooms.push(document.getElementById('r1').value);
+    if(document.getElementById('r2').checked) rooms.push(document.getElementById('r2').value);
+    if(document.getElementById('r3').checked) rooms.push(document.getElementById('r3').value);
+
+    const adults = (document.getElementById('inpAdults')||{}).value || '0';
+    const childs = (document.getElementById('inpChild')||{}).value || '0';
+
+    const msg = `*BNR Residency — Booking Enquiry*
+
+ Name: ${name}
+ Mobile: ${mobile}
+ City: ${city}
+
+ Room Types: ${rooms.length ? rooms.join(', ') : 'Not specified'}
+ Adults: ${adults}    Childs: ${childs}
+
+ Check-In: ${checkinVal}
+ Check-Out: ${checkoutVal}
+
+Please confirm availability and rates.`;
+
+    // open WhatsApp
+    const wa = 'https://wa.me/919442640803?text=' + encodeURIComponent(msg);
+    window.open(wa, '_blank');
+  });
+}
+</script>
+</body>
+</html>
